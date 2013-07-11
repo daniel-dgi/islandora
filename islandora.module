@@ -812,7 +812,7 @@ function islandora_default_islandora_view_object($object) {
  *
  * Includes some very basic error logging.
  *
- * @param object $user
+ * @param object $usr
  *   The user to connect as.
  * @param string $url
  *   The URL to connect to.
@@ -820,12 +820,18 @@ function islandora_default_islandora_view_object($object) {
  * @return IslandoraTuque
  *   A IslandoraTuque instance
  */
-function islandora_get_tuque_connection($user = NULL, $url = NULL) {
+function islandora_get_tuque_connection($usr = NULL, $url = NULL) {
   $tuque = &drupal_static(__FUNCTION__);
-  if (!$tuque) {
+
+  global $user;
+
+  $no_tuque_yet = !$tuque;
+  $user_is_different = ($usr && $usr->uid != $user->uid);
+
+  if ($no_tuque_yet || $user_is_different) {
     if (IslandoraTuque::exists()) {
       try {
-        $tuque = new IslandoraTuque($user, $url);
+        $tuque = new IslandoraTuque($usr, $url);
       }
       catch (Exception $e) {
         drupal_set_message(t('Unable to connect to the repository %e', array('%e' => $e)), 'error');
