@@ -256,6 +256,14 @@ function islandora_install_solution_pack($module, $op = 'install') {
     return;
   }
 
+  // Login as user 1 if the installation is coming from the command line (e.g.
+  // drush).
+  if (drupal_is_cli()) {
+    global $user;
+    $user = user_load(1);
+    user_login_finalize();
+  }
+
   $t = get_t();
 
   // Some general replacements.
